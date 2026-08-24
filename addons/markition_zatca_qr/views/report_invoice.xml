@@ -11,15 +11,23 @@
         The current on-disk source uses `o._l10n_sa_is_legal()` (underscore method call), but
         the DB stores the compiled arch from the older version. We cannot change the DB's
         stored arch directly without touching the core module, so we override it here via
-        inheritance: replace only the t-if attribute on the img so it gates directly on the
-        QR field, which is what _l10n_sa_is_legal() checks anyway.
+        inheritance: replace the ENTIRE QR div (not just the t-if attribute) so that any
+        structural variation inside the old arch is irrelevant — the replacement block is
+        authoritative and gates only on l10n_sa_qr_code_str, which is what _l10n_sa_is_legal()
+        checks anyway.
     -->
     <template id="markition_zatca_qr_on_invoice"
               name="Markition: Fix ZATCA QR t-if on Saudi Invoice"
               inherit_id="l10n_sa.l10n_sa_report_invoice_document">
 
-        <xpath expr="//div[@id='l10n_sa_qr_code']//img" position="attributes">
-            <attribute name="t-if">o.l10n_sa_qr_code_str</attribute>
+        <xpath expr="//div[@id='l10n_sa_qr_code']" position="replace">
+            <div id="l10n_sa_qr_code" class="row avoid-page-break-inside">
+                <p class="col-6 position-relative m-0">
+                    <img t-if="o.l10n_sa_qr_code_str"
+                        class="d-block"
+                        t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', quote_plus(o.l10n_sa_qr_code_str), 200, 200)"/>
+                </p>
+            </div>
         </xpath>
 
     </template>
