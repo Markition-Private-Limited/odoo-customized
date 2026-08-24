@@ -13,8 +13,7 @@
         stored arch directly without touching the core module, so we override it here via
         inheritance: replace the ENTIRE QR div (not just the t-if attribute) so that any
         structural variation inside the old arch is irrelevant — the replacement block is
-        authoritative and gates only on l10n_sa_qr_code_str, which is what _l10n_sa_is_legal()
-        checks anyway.
+        authoritative while retaining Odoo's native legal-document check.
     -->
     <template id="markition_zatca_qr_on_invoice"
               name="Markition: Fix ZATCA QR t-if on Saudi Invoice"
@@ -23,7 +22,7 @@
         <xpath expr="//div[@id='l10n_sa_qr_code']" position="replace">
             <div id="l10n_sa_qr_code" class="row avoid-page-break-inside">
                 <p class="col-6 position-relative m-0">
-                    <img t-if="o.l10n_sa_qr_code_str"
+                    <img t-if="o._l10n_sa_is_legal() and o.l10n_sa_qr_code_str"
                         class="d-block"
                         t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', quote_plus(o.l10n_sa_qr_code_str), 200, 200)"/>
                 </p>
